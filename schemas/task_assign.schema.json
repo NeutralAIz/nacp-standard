@@ -1,0 +1,49 @@
+{
+  "$id": "https://nacp.dev/schemas/task_assign.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Assignment Payload",
+  "description": "Payload for TASK_ASSIGN messages \u2014 initiator assigns a task to an executor.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique task identifier"
+    },
+    "skill": {
+      "type": "string",
+      "description": "Skill identifier to invoke"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable task description"
+    },
+    "input_data": {
+      "type": "object",
+      "description": "Skill-specific input parameters"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 deadline"
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "callback_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Optional callback URL for result delivery"
+    }
+  },
+  "required": [
+    "task_id",
+    "skill",
+    "description",
+    "input_data"
+  ],
+  "additionalProperties": true
+}

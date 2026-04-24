@@ -1,0 +1,27 @@
+{
+  "$id": "https://nacp.dev/schemas/relay.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP Relay Message",
+  "description": "A relay envelope wrapping a NACP message for delivery through the liaison.",
+  "type": "object",
+  "properties": {
+    "from_agent": {
+      "type": "string",
+      "description": "Sender agent ID"
+    },
+    "to_agent": {
+      "type": "string",
+      "description": "Recipient agent ID"
+    },
+    "envelope": {
+      "$ref": "envelope.schema.json",
+      "description": "The NACP message envelope being relayed"
+    }
+  },
+  "required": [
+    "from_agent",
+    "to_agent",
+    "envelope"
+  ],
+  "additionalProperties": true
+}

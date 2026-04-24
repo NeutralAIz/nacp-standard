@@ -1,0 +1,17 @@
+{
+  "$id": "https://nacp.dev/schemas/task_resume.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Resume Payload",
+  "description": "Payload for TASK_RESUME messages.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,51 @@
+{
+  "$id": "https://nacp.dev/schemas/artifact.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP Artifact",
+  "description": "A first-class artifact produced by a task execution.",
+  "type": "object",
+  "properties": {
+    "artifact_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "patch",
+        "log",
+        "report",
+        "json",
+        "file",
+        "screenshot",
+        "trace",
+        "notebook"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "description": "nacp://artifact/{uuid} or external URI"
+    },
+    "sha256": {
+      "type": "string",
+      "description": "SHA-256 hex digest of artifact content"
+    },
+    "mime_type": {
+      "type": "string"
+    },
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "artifact_id",
+    "type",
+    "uri",
+    "sha256"
+  ],
+  "additionalProperties": true
+}

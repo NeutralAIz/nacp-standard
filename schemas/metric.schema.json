@@ -1,0 +1,31 @@
+{
+  "$id": "https://nacp.dev/schemas/metric.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP Metric",
+  "description": "A performance or operational metric recorded by the liaison.",
+  "type": "object",
+  "properties": {
+    "agent_id": {
+      "type": "string"
+    },
+    "metric_type": {
+      "type": "string"
+    },
+    "value": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "agent_id",
+    "metric_type",
+    "value",
+    "unit"
+  ],
+  "additionalProperties": true
+}

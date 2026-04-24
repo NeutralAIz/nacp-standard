@@ -1,0 +1,42 @@
+{
+  "$id": "https://nacp.dev/schemas/task_status_response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Status Response Payload",
+  "description": "Payload for TASK_STATUS_RESPONSE messages.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "created",
+        "assigned",
+        "accepted",
+        "rejected",
+        "running",
+        "progress",
+        "completed",
+        "failed",
+        "partial",
+        "cancelled",
+        "timeout"
+      ]
+    },
+    "progress_percent": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "estimated_remaining_ms": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "task_id",
+    "status"
+  ],
+  "additionalProperties": true
+}

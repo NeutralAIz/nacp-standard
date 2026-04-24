@@ -1,0 +1,105 @@
+{
+  "$id": "https://nacp.dev/schemas/envelope.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP Message Envelope",
+  "description": "The signed JSON envelope that wraps every NACP message.",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$",
+      "description": "Protocol version (1.x — backward-compatible additions land in minor bumps; major bumps are breaking)"
+    },
+    "msg_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique message identifier (UUID v4)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp with microseconds"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "PING",
+        "PONG",
+        "HEARTBEAT",
+        "DISCOVER",
+        "SKILL_QUERY",
+        "SKILL_RESPONSE",
+        "TASK_ASSIGN",
+        "TASK_ACCEPT",
+        "TASK_REJECT",
+        "TASK_PROGRESS",
+        "TASK_RESULT",
+        "TASK_CANCEL",
+        "TASK_CANCELLED",
+        "TASK_STATUS_QUERY",
+        "TASK_STATUS_RESPONSE",
+        "TASK_PAUSE",
+        "TASK_RESUME",
+        "SIGNALING_ICE",
+        "SIGNALING_SDP",
+        "SIGNALING_PEER",
+        "HANDSHAKE_INIT",
+        "HANDSHAKE_ACK",
+        "CHANNEL_OPEN",
+        "CHANNEL_CLOSE",
+        "ERROR"
+      ],
+      "description": "Message type"
+    },
+    "from": {
+      "type": "string",
+      "description": "Sender agent ID"
+    },
+    "to": {
+      "type": "string",
+      "description": "Recipient agent ID or 'broadcast'"
+    },
+    "reply_to": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Correlation ID for request/response"
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "ttl": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 300,
+      "description": "Time-to-live in seconds"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Type-specific payload"
+    },
+    "signature": {
+      "type": "string",
+      "description": "Base64 Ed25519 signature over canonical JSON"
+    },
+    "session_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Encrypted P2P session ID"
+    }
+  },
+  "required": [
+    "version",
+    "msg_id",
+    "timestamp",
+    "type",
+    "from",
+    "to",
+    "priority",
+    "ttl",
+    "payload"
+  ],
+  "additionalProperties": true
+}

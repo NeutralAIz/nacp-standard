@@ -1,0 +1,77 @@
+{
+  "$id": "https://nacp.dev/schemas/task_result.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Result Payload",
+  "description": "Payload for TASK_RESULT messages \u2014 executor delivers final result.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "failed",
+        "partial"
+      ]
+    },
+    "result": {
+      "type": "object",
+      "description": "Skill output data"
+    },
+    "execution_time_ms": {
+      "type": "integer"
+    },
+    "tokens_used": {
+      "type": "integer"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if status is failed"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "artifact.schema.json"
+      },
+      "description": "Artifacts produced by the task"
+    },
+    "evaluation": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number"
+        },
+        "confidence": {
+          "type": "number"
+        },
+        "tests_passed": {
+          "type": "integer"
+        },
+        "tests_failed": {
+          "type": "integer"
+        },
+        "runtime_ms": {
+          "type": "integer"
+        },
+        "tokens_used": {
+          "type": "integer"
+        },
+        "cost_estimate": {
+          "type": "number"
+        },
+        "model": {
+          "type": "string"
+        }
+      },
+      "description": "Benchmark evaluation metadata"
+    }
+  },
+  "required": [
+    "task_id",
+    "status"
+  ],
+  "additionalProperties": true
+}

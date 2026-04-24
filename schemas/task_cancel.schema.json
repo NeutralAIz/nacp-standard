@@ -1,0 +1,21 @@
+{
+  "$id": "https://nacp.dev/schemas/task_cancel.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Cancel Payload",
+  "description": "Payload for TASK_CANCEL messages \u2014 initiator requests task cancellation.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "reason"
+  ],
+  "additionalProperties": true
+}
