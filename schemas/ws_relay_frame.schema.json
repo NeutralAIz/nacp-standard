@@ -1,0 +1,49 @@
+{
+  "$id": "https://nacp.dev/schemas/ws_relay_frame.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP WebSocket Relay Frame",
+  "description": "Frames exchanged on the ``/ws/relay/{agent_id}`` push channel. New in NACP 1.1.1 (formalising long-standing implementation behaviour).",
+  "oneOf": [
+    {"$ref": "#/$defs/AuthOk"},
+    {"$ref": "#/$defs/Relay"}
+  ],
+  "$defs": {
+    "AuthOk": {
+      "type": "object",
+      "title": "AUTH_OK",
+      "description": "Server → client acknowledgement that the inbound AUTH_ACTION frame verified.",
+      "required": ["type", "agent_id"],
+      "properties": {
+        "type": {"type": "string", "const": "AUTH_OK"},
+        "agent_id": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "Relay": {
+      "type": "object",
+      "title": "RELAY",
+      "description": "Server → client push of an inbound NACP envelope addressed to the connected agent.",
+      "required": ["type", "message"],
+      "properties": {
+        "type": {"type": "string", "const": "RELAY"},
+        "message": {
+          "type": "object",
+          "required": ["id", "envelope"],
+          "properties": {
+            "id": {"type": "string", "format": "uuid"},
+            "from_agent": {"type": ["string", "null"]},
+            "to_agent": {"type": ["string", "null"]},
+            "envelope": {
+              "type": "string",
+              "description": "Canonical JSON of the original NACP envelope. Receivers MUST JSON-parse this string before verifying the signature."
+            },
+            "created_at": {"type": ["string", "null"], "format": "date-time"},
+            "expires_at": {"type": ["string", "null"], "format": "date-time"}
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,8 +1,8 @@
 # NACP — Networked Agent Contract Protocol
 
-**Version:** 1.1.0-draft  
-**Status:** Draft (Updated with Payment & Signaling)  
-**Last Reviewed:** 2026-04-24  
+**Version:** 1.1.1-draft  
+**Status:** Draft (1.1.1 adds AUTH_ACTION header pattern, REST error envelope, expanded WebSocket protocol)  
+**Last Reviewed:** 2026-04-30  
 **Maintainers:** NeutralAIz Inc.
 
 ---
@@ -145,11 +145,13 @@ Facilitates the WebRTC-style "handoff" from Liaison to direct P2P connection.
 |------|---------|
 | `NACP-400` | Malformed message |
 | `NACP-401` | Invalid or missing signature |
+| `NACP-402` | Payment required (insufficient credits / escrow refused) |
 | `NACP-403` | Unauthorized agent |
 | `NACP-404` | Agent/task/skill not found |
 | `NACP-408` | Timeout |
-| `NACP-409` | Conflict (duplicate registration, etc.) |
+| `NACP-409` | Conflict (duplicate registration, illegal state transition, etc.) |
 | `NACP-413` | Payload too large |
+| `NACP-422` | Request body validation failed (REST APIs) |
 | `NACP-429` | Rate limited |
 | `NACP-500` | Internal server error |
 | `NACP-503` | Service unavailable |
@@ -183,31 +185,156 @@ def canonical_json(envelope: dict) -> str:
 
 ## 5. Transport Modes
 
-### 5.1 REST (HTTP/2)
+NACP supports two REST authentication patterns and a WebSocket fast path.
+Both REST patterns coexist; implementations choose per-endpoint based on
+whether the request body itself carries an envelope.
+
+### 5.1.a REST — Envelope-in-body (`X-NACP-Signature` optional)
+
+When the request body **is** a NACP envelope (e.g. an inbound message
+delivered via `POST /nacp/inbox` or `POST /api/v1/relay`), the signature
+travels inside the envelope's `signature` field. Implementations MAY
+additionally echo the signature in an `X-NACP-Signature` header for
+intermediaries that need to verify without parsing the body.
 
 ```
 POST /nacp/inbox
-X-NACP-Signature: base64-signature
+X-NACP-Signature: base64-signature   (optional convenience)
 Content-Type: application/json
 
-<envelope>
+{
+  "version": "1.1",
+  "msg_id": "...",
+  ...
+  "signature": "base64-ed25519-signature"
+}
 ```
 
+### 5.1.b REST — Action Envelope (`X-NACP-Auth`, new in 1.1.1)
+
+State-changing endpoints often have **no envelope to put a signature in**
+— a `DELETE /api/v1/agents/{id}` has no body; a `PUT
+/api/v1/agents/{id}/status` carries a small status string, not a NACP
+message; a `GET /api/v1/relay/{id}` is a poll. To authenticate these
+calls, the caller wraps a fresh signed envelope of type `AUTH_ACTION`
+and sends it in the `X-NACP-Auth` header, base64-encoded.
+
+```
+DELETE /api/v1/agents/{id}
+X-NACP-Auth: base64( {
+  "version": "1.1",
+  "msg_id": "<uuid4>",
+  "timestamp": "<ISO-8601 UTC>",
+  "type": "AUTH_ACTION",
+  "from": "<caller-agent-id>",
+  "to": "<implementation-system-id>",
+  "payload": {
+    "action": "<action>",
+    "agent_id": "<target-agent-id>"
+  },
+  "signature": "<base64 Ed25519>"
+} )
+```
+
+The receiver:
+
+1. Base64-decodes the header, parses the JSON envelope.
+2. Asserts `type == "AUTH_ACTION"`.
+3. Asserts `payload.action` is one of the recognised actions for the
+   endpoint.
+4. Asserts `payload.agent_id` matches the path-level resource.
+5. Verifies the Ed25519 signature against the canonical-JSON form of
+   the envelope (signature stripped) and the registered public key of
+   `from`.
+6. Records `msg_id` for replay protection within the time-skew window.
+
+Implementations **MUST** advertise their full action set at
+`.well-known/nacp.auth.action_registry` so agents can discover which
+strings to sign. Action names are implementation-namespaced (e.g.
+`hub.heartbeat`, `hub.task_create`) — bare names are reserved for the
+spec.
+
+Schema: [`schemas/auth_action.schema.json`](schemas/auth_action.schema.json).
+
 ### 5.2 WebSocket
+
+NACP defines two WebSocket usage patterns:
+
+#### 5.2.a Inter-agent direct (legacy)
 
 ```
 ws://host:port/nacp/ws?agent_id=<id>&session_id=<optional>
 ```
+
+Reserved for direct agent-to-agent connections. Out of scope for 1.1.1.
+
+#### 5.2.b Relay push (new in 1.1.1)
+
+A liaison-mediated WebSocket fast path that delivers inbound envelopes
+to an agent in <100ms. Replaces the polling fallback when the agent can
+hold an outbound socket open.
+
+```
+WS /api/v1/relay/{agent_id}
+```
+
+**Authentication frame** (first frame, client → server): a single TEXT
+frame containing the JSON of an `AUTH_ACTION` envelope (§5.1.b) with
+`payload.action == "ws_relay"`. The server has 10 seconds to receive it
+before closing with code 4401.
+
+**Server-sent frames** — see
+[`schemas/ws_relay_frame.schema.json`](schemas/ws_relay_frame.schema.json):
+
+- `AUTH_OK`: acknowledgement (`{type: "AUTH_OK", agent_id: "..."}`)
+- `RELAY`: inbound envelope (`{type: "RELAY", message: {id, envelope, ...}}`)
+  — `message.envelope` is a JSON-encoded string; receivers parse it
+  before verifying the signature.
+
+**Close codes:**
+
+| Code | Meaning |
+|------|---------|
+| `4400` | Bad JSON in auth frame |
+| `4401` | Auth timeout (no first frame within 10s) **or** signature verification failed |
+| `4403` | `auth.from` or `auth.payload.agent_id` does not match the path `{agent_id}` |
 
 ### 5.3 Relay (via Liaison)
 
 Agents behind NAT/firewalls communicate through a liaison (relay) service:
 
 ```
-POST  /api/v1/relay          # Send relay message
-GET   /api/v1/relay/{id}     # Poll pending messages
-WS    /api/v1/relay/{id}/ws  # WebSocket relay stream
+POST  /api/v1/relay          # Send relay message (envelope in body, §5.1.a)
+GET   /api/v1/relay/{id}     # Poll pending messages (X-NACP-Auth, §5.1.b, action="relay_poll")
+WS    /api/v1/relay/{id}     # WebSocket fast path (§5.2.b)
 ```
+
+> **Scope note.** NACP-conformant liaisons MAY cap relay payload size
+> aggressively (e.g. 64 KB) to discourage shuttling agent data through
+> the relay. Agents should exchange pointers (presigned URLs, content
+> IDs) rather than raw bytes.
+
+### 5.4 REST error envelope (new in 1.1.1)
+
+NACP-conformant REST APIs return non-2xx responses in a unified shape —
+distinct from the inter-agent ERROR envelope of §3.7:
+
+```json
+{
+  "error_code": "NACP-404",
+  "error_message": "Agent not found",
+  "error_detail": null,
+  "request_id": "<X-Request-Id>"
+}
+```
+
+Schema: [`schemas/rest_error.schema.json`](schemas/rest_error.schema.json).
+
+`error_code` enum extends §3.7 with `NACP-402` (payment required) and
+`NACP-422` (body validation). `error_detail` MAY be an object, array,
+or null; implementations should put state-machine state, validation
+failures, and recovery hints there. `request_id` echoes the
+`X-Request-Id` response header for log correlation.
 
 ---
 
