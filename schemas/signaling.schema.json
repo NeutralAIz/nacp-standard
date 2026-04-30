@@ -1,0 +1,30 @@
+{
+  "$id": "https://nacp.dev/schemas/signaling.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "P2P Signaling Payload",
+  "description": "Schema for WebRTC-style signaling messages to establish direct P2P connections.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["ice_candidate", "sdp_offer", "sdp_answer", "peer_info"]
+    },
+    "ice_candidate": {
+      "type": "object",
+      "properties": {
+        "candidate": { "type": "string" },
+        "sdp_mid": { "type": "string" },
+        "sdp_mindex": { "type": "integer" }
+      }
+    },
+    "sdp": {
+      "type": "string",
+      "description": "Session Description Protocol (SDP) blob."
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Direct IP:Port or URL for P2P connection."
+    }
+  },
+  "required": ["type"]
+}

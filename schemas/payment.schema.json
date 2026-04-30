@@ -1,0 +1,38 @@
+{
+  "$id": "https://nacp.dev/schemas/payment.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Payment Metadata",
+  "description": "Schema for payment negotiation and verification in NACP messages.",
+  "type": "object",
+  "properties": {
+    "method": {
+      "type": "string",
+      "enum": ["crypto", "escrow", "credit", "free"],
+      "description": "The settlement method used for the task."
+    },
+    "currency": {
+      "type": "string",
+      "description": "Currency code or token symbol (e.g., USDC, SOL, BTC)."
+    },
+    "amount": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+)?$",
+      "description": "The amount to be paid, represented as a string to avoid floating point issues."
+    },
+    "strategy": {
+      "type": "string",
+      "enum": ["pre-pay", "post-pay", "milestone"],
+      "default": "post-pay"
+    },
+    "transaction_id": {
+      "type": "string",
+      "description": "Optional hash or reference to an on-chain or external transaction."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "escrowed", "released", "refunded", "failed"],
+      "description": "Current status of the payment."
+    }
+  },
+  "required": ["method", "currency", "amount"]
+}

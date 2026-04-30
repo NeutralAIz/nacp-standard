@@ -1,0 +1,26 @@
+{
+  "$id": "https://nacp.dev/schemas/task_cancelled.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Cancelled Payload",
+  "description": "Payload for TASK_CANCELLED messages \u2014 executor confirms cancellation.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status_at_cancellation": {
+      "type": "string",
+      "description": "Task status when cancellation was processed"
+    },
+    "partial_result": {
+      "type": "object",
+      "description": "Any partial work completed"
+    }
+  },
+  "required": [
+    "task_id",
+    "status_at_cancellation"
+  ],
+  "additionalProperties": true
+}

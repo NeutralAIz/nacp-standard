@@ -1,0 +1,170 @@
+{
+  "$id": "https://nacp.dev/schemas/contract.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP Contract",
+  "description": "Neutral, transport-neutral contract envelope for delegated autonomous agent work. Defines parties, terms, lifecycle, execution references, evidence, audit events, and settlement metadata. NACP does not move money, replace A2A or MCP, or require any specific runtime.",
+  "type": "object",
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Globally unique identifier for this contract. Implementation-assigned."
+    },
+    "contract_type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Neutral category, e.g. 'delegated_task', 'subscription', 'evaluation'. Implementation-defined values SHOULD be namespaced."
+    },
+    "protocol_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?(-[A-Za-z0-9.-]+)?$",
+      "description": "NACP protocol version this contract was authored against."
+    },
+    "requester": { "$ref": "#/$defs/identity_reference" },
+    "provider": { "$ref": "#/$defs/identity_reference" },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp the contract was created."
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "After this time, an unaccepted contract is void."
+    },
+    "deadline_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time by which the work must be complete."
+    },
+    "task_category": {
+      "type": "string",
+      "description": "Neutral category for the work itself."
+    },
+    "task_summary": {
+      "type": "string",
+      "description": "Short human-readable summary of the work."
+    },
+    "task_payload_ref": {
+      "type": "object",
+      "description": "Pointer to the detailed task payload (which may live outside the contract).",
+      "additionalProperties": true
+    },
+    "execution_transport": {
+      "type": "string",
+      "description": "Identifier for the transport on which the work will be performed: 'a2a', 'mcp', 'api', 'queue', 'p2p', 'file', 'human', or an implementation-namespaced value (e.g. 'acme.queue')."
+    },
+    "execution_refs": {
+      "type": "object",
+      "description": "Transport-specific references. NACP does not prescribe the wire protocol of the underlying transport.",
+      "additionalProperties": true
+    },
+    "output_requirements": {
+      "type": "object",
+      "description": "What output is expected (format, schema, fields).",
+      "additionalProperties": true
+    },
+    "evidence_requirements": {
+      "type": "object",
+      "description": "What evidence is expected (artifacts, receipts, logs).",
+      "additionalProperties": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence_reference" },
+      "description": "Concrete evidence references attached to the contract."
+    },
+    "lifecycle_status": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "accepted",
+        "rejected",
+        "in_progress",
+        "paused",
+        "completed",
+        "failed",
+        "cancelled",
+        "disputed",
+        "settled"
+      ],
+      "description": "Current lifecycle state. Implementations MAY add namespaced extension states under extension_fields."
+    },
+    "audit_events": {
+      "type": "array",
+      "items": { "$ref": "audit_event.schema.json" },
+      "description": "Append-only list of audit event records."
+    },
+    "evaluation_reference": {
+      "type": "object",
+      "description": "Optional pointer to a separate evaluation, scoring, or QA process. NACP does not define what that process is.",
+      "additionalProperties": true
+    },
+    "settlement_mode": {
+      "type": "string",
+      "description": "Neutral settlement mode: 'none', 'prepaid', 'postpaid', 'escrow', 'external_reference', or implementation-namespaced."
+    },
+    "settlement_reference": {
+      "$ref": "settlement.schema.json",
+      "description": "Pointer to an external payment, escrow, credit, receipt, or settlement system. NACP does not move money."
+    },
+    "dispute_status": {
+      "type": "string",
+      "description": "One of 'none', 'open', 'resolved', 'withdrawn', or implementation-namespaced."
+    },
+    "extension_fields": {
+      "type": "object",
+      "description": "Namespaced extension data. Bare keys are reserved for the spec; implementations MUST use namespaced keys (e.g. 'acme.scoring').",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "contract_id",
+    "contract_type",
+    "protocol_version",
+    "requester",
+    "provider",
+    "created_at",
+    "execution_transport",
+    "lifecycle_status"
+  ],
+  "additionalProperties": true,
+  "$defs": {
+    "identity_reference": {
+      "type": "object",
+      "description": "Identity reference for a party to a contract. NACP does not mandate a specific identity scheme.",
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "id_type": {
+          "type": "string",
+          "description": "e.g. 'did', 'url', 'uuid', 'fingerprint', or implementation-namespaced."
+        },
+        "display_name": { "type": "string" },
+        "public_key": { "type": "string" },
+        "public_key_alg": { "type": "string" }
+      },
+      "required": ["id"],
+      "additionalProperties": true
+    },
+    "evidence_reference": {
+      "type": "object",
+      "description": "Pointer to evidence that work was performed.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "e.g. 'artifact', 'tool_call_log', 'signed_receipt', 'audit_record', or implementation-namespaced."
+        },
+        "uri": { "type": "string" },
+        "content_hash": { "type": "string" },
+        "transport": { "type": "string" },
+        "call_ids": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["kind"],
+      "additionalProperties": true
+    }
+  }
+}

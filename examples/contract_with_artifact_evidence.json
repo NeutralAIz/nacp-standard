@@ -1,0 +1,33 @@
+{
+  "contract_id": "contract_artifact_001",
+  "contract_type": "delegated_task",
+  "protocol_version": "1.1",
+  "requester": {
+    "id": "uuid:11111111-1111-1111-1111-111111111111",
+    "id_type": "uuid"
+  },
+  "provider": {
+    "id": "uuid:22222222-2222-2222-2222-222222222222",
+    "id_type": "uuid"
+  },
+  "created_at": "2026-04-30T10:00:00.000000Z",
+  "task_category": "image_classification",
+  "task_summary": "Classify the supplied image set.",
+  "execution_transport": "file",
+  "execution_refs": {
+    "input_uri": "s3://bucket/inputs/2026-04-30/job.json",
+    "output_uri": "s3://bucket/outputs/2026-04-30/job.json"
+  },
+  "evidence": [
+    {
+      "kind": "artifact",
+      "uri": "s3://bucket/outputs/2026-04-30/job.json",
+      "content_hash": "sha256:abc123..."
+    },
+    {
+      "kind": "signed_receipt",
+      "uri": "https://example.com/receipts/r_001"
+    }
+  ],
+  "lifecycle_status": "completed"
+}

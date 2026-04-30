@@ -1,0 +1,58 @@
+{
+  "contract_id": "contract_dispute_001",
+  "contract_type": "delegated_task",
+  "protocol_version": "1.1",
+  "requester": { "id": "did:example:requester", "id_type": "did" },
+  "provider": { "id": "did:example:provider", "id_type": "did" },
+  "created_at": "2026-04-30T09:00:00.000000Z",
+  "accepted_at": "2026-04-30T09:00:30.000000Z",
+  "task_category": "translation",
+  "task_summary": "Translate attached document into French.",
+  "execution_transport": "api",
+  "execution_refs": {
+    "endpoint": "https://provider.example.com/api/v1/jobs",
+    "job_id": "job_failed_001"
+  },
+  "lifecycle_status": "disputed",
+  "dispute_status": "open",
+  "audit_events": [
+    {
+      "event_id": "evt_d001",
+      "timestamp": "2026-04-30T09:00:00.000000Z",
+      "actor": { "id": "did:example:requester", "id_type": "did" },
+      "event_type": "lifecycle_transition",
+      "details": { "to": "proposed" }
+    },
+    {
+      "event_id": "evt_d002",
+      "timestamp": "2026-04-30T09:00:30.000000Z",
+      "actor": { "id": "did:example:provider", "id_type": "did" },
+      "event_type": "lifecycle_transition",
+      "details": { "from": "proposed", "to": "accepted" }
+    },
+    {
+      "event_id": "evt_d003",
+      "timestamp": "2026-04-30T09:30:00.000000Z",
+      "actor": { "id": "did:example:provider", "id_type": "did" },
+      "event_type": "lifecycle_transition",
+      "details": { "from": "in_progress", "to": "failed", "reason": "source language detection failed" }
+    },
+    {
+      "event_id": "evt_d004",
+      "timestamp": "2026-04-30T09:35:00.000000Z",
+      "actor": { "id": "did:example:requester", "id_type": "did" },
+      "event_type": "dispute_raised",
+      "details": {
+        "reason": "Provider rejected supported language without retry",
+        "evidence_uri": "https://example.com/disputes/d001/evidence.json"
+      }
+    },
+    {
+      "event_id": "evt_d005",
+      "timestamp": "2026-04-30T09:35:05.000000Z",
+      "actor": { "id": "did:example:requester", "id_type": "did" },
+      "event_type": "lifecycle_transition",
+      "details": { "from": "failed", "to": "disputed" }
+    }
+  ]
+}

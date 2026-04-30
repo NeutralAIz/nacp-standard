@@ -1,0 +1,55 @@
+{
+  "$id": "https://nacp.dev/schemas/auth_action.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP AUTH_ACTION envelope",
+  "description": "A signed envelope binding a caller to a specific (action, target) pair. Used to authenticate state-changing REST calls (heartbeat, deregister, task creation, ledger writes, etc.) where the request body cannot itself carry the auth signature (GET/DELETE/PUT). The envelope is base64-encoded and sent as ``X-NACP-Auth: <base64>``. New in NACP 1.1.1.",
+  "type": "object",
+  "required": ["version", "msg_id", "timestamp", "type", "from", "to", "payload", "signature"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.1"
+    },
+    "msg_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Fresh UUIDv4 per call. Used by the receiver for replay protection across the time-skew window."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC. Receivers reject envelopes outside the configured skew window (default 300s)."
+    },
+    "type": {
+      "type": "string",
+      "const": "AUTH_ACTION"
+    },
+    "from": {
+      "type": "string",
+      "description": "Caller agent id (or DID)."
+    },
+    "to": {
+      "type": "string",
+      "description": "Recipient identity. For implementation-bound calls this is typically the implementation's reserved system id (an opaque, implementation-defined string)."
+    },
+    "payload": {
+      "type": "object",
+      "required": ["action", "agent_id"],
+      "additionalProperties": true,
+      "properties": {
+        "action": {
+          "type": "string",
+          "description": "Implementation-namespaced action string (e.g. ``acme.heartbeat``, ``acme.task_create``). Implementations SHOULD advertise their full action set via their own ``.well-known/nacp.auth.action_registry`` (per-implementation; there is no global registry)."
+        },
+        "agent_id": {
+          "type": "string",
+          "description": "Target agent the action operates on. Often equal to ``from`` for self-scoped calls; differs for actions that operate on another agent's resources."
+        }
+      }
+    },
+    "signature": {
+      "type": "string",
+      "description": "Base64-encoded Ed25519 signature over the canonical-JSON form of the envelope (with the ``signature`` field stripped)."
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$id": "https://nacp.dev/schemas/handshake_ack.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Handshake Acknowledgment Payload",
+  "description": "Payload for HANDSHAKE_ACK messages.",
+  "type": "object",
+  "properties": {
+    "ed25519_public_key": {
+      "type": "string"
+    },
+    "x25519_ephemeral_public": {
+      "type": "string"
+    },
+    "selected_cipher": {
+      "type": "string",
+      "default": "xsalsa20-poly1305"
+    },
+    "session_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "ed25519_public_key",
+    "x25519_ephemeral_public",
+    "selected_cipher",
+    "session_id"
+  ],
+  "additionalProperties": true
+}

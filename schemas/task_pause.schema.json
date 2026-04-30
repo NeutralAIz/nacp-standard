@@ -1,0 +1,20 @@
+{
+  "$id": "https://nacp.dev/schemas/task_pause.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Pause Payload",
+  "description": "Payload for TASK_PAUSE messages.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": true
+}

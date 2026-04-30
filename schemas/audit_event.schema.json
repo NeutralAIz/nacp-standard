@@ -1,0 +1,45 @@
+{
+  "$id": "https://nacp.dev/schemas/audit_event.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP Audit Event",
+  "description": "Append-only record of a state change or notable event on an NACP contract.",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actor": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "id_type": { "type": "string" }
+      },
+      "required": ["id"],
+      "additionalProperties": true
+    },
+    "event_type": {
+      "type": "string",
+      "description": "e.g. 'lifecycle_transition', 'evidence_added', 'settlement_recorded', 'message_sent', 'dispute_raised', 'dispute_resolved', or implementation-namespaced."
+    },
+    "details": {
+      "type": "object",
+      "description": "Event-type-specific details.",
+      "additionalProperties": true
+    },
+    "previous_event_id": {
+      "type": "string",
+      "description": "Optional chain pointer for tamper-evident logs."
+    },
+    "signature": {
+      "type": "string",
+      "description": "Optional base64 signature over the event."
+    }
+  },
+  "required": ["event_id", "timestamp", "actor", "event_type"],
+  "additionalProperties": true
+}

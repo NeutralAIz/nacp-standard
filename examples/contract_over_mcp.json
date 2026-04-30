@@ -1,0 +1,30 @@
+{
+  "contract_id": "contract_mcp_001",
+  "contract_type": "delegated_task",
+  "protocol_version": "1.1",
+  "requester": {
+    "id": "did:example:llm_host",
+    "id_type": "did"
+  },
+  "provider": {
+    "id": "did:example:tool_provider",
+    "id_type": "did"
+  },
+  "created_at": "2026-04-30T10:00:00.000000Z",
+  "task_category": "data_extraction",
+  "task_summary": "Extract product details from supplied URLs.",
+  "execution_transport": "mcp",
+  "execution_refs": {
+    "server_uri": "stdio://example-mcp-server",
+    "tool_name": "scrape_products",
+    "tool_call_ids": ["call_abc", "call_def"]
+  },
+  "output_requirements": {
+    "format": "json",
+    "schema_uri": "https://example.com/schemas/products.json"
+  },
+  "evidence_requirements": {
+    "kinds": ["tool_call_log"]
+  },
+  "lifecycle_status": "completed"
+}

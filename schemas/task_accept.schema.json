@@ -1,0 +1,25 @@
+{
+  "$id": "https://nacp.dev/schemas/task_accept.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Acceptance Payload",
+  "description": "Payload for TASK_ACCEPT messages \u2014 executor accepts a task.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "estimated_duration_ms": {
+      "type": "integer",
+      "description": "Estimated time to complete"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes from executor"
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": true
+}

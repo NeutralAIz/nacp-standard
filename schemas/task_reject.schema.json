@@ -1,0 +1,26 @@
+{
+  "$id": "https://nacp.dev/schemas/task_reject.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Rejection Payload",
+  "description": "Payload for TASK_REJECT messages \u2014 executor rejects a task.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Machine-readable rejection reason code"
+    },
+    "message": {
+      "type": "string",
+      "description": "Human-readable rejection explanation"
+    }
+  },
+  "required": [
+    "task_id",
+    "reason"
+  ],
+  "additionalProperties": true
+}

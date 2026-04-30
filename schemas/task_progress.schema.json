@@ -1,0 +1,30 @@
+{
+  "$id": "https://nacp.dev/schemas/task_progress.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task Progress Payload",
+  "description": "Payload for TASK_PROGRESS messages \u2014 executor reports progress.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "progress_percent": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "status_message": {
+      "type": "string"
+    },
+    "intermediate_result": {
+      "type": "object",
+      "description": "Partial results so far"
+    }
+  },
+  "required": [
+    "task_id",
+    "progress_percent"
+  ],
+  "additionalProperties": true
+}

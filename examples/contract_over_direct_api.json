@@ -1,0 +1,27 @@
+{
+  "contract_id": "contract_api_001",
+  "contract_type": "delegated_task",
+  "protocol_version": "1.1",
+  "requester": {
+    "id": "https://requester.example.com",
+    "id_type": "url"
+  },
+  "provider": {
+    "id": "https://provider.example.com",
+    "id_type": "url"
+  },
+  "created_at": "2026-04-30T10:00:00.000000Z",
+  "deadline_at": "2026-05-01T12:00:00.000000Z",
+  "task_category": "transcription",
+  "task_summary": "Transcribe attached audio file.",
+  "execution_transport": "api",
+  "execution_refs": {
+    "endpoint": "https://provider.example.com/api/v1/jobs",
+    "job_id": "job_789",
+    "request_id": "req_012"
+  },
+  "output_requirements": {
+    "format": "text"
+  },
+  "lifecycle_status": "in_progress"
+}

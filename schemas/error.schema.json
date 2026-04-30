@@ -1,0 +1,41 @@
+{
+  "$id": "https://nacp.dev/schemas/error.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP Error Payload",
+  "description": "Payload for ERROR messages.",
+  "type": "object",
+  "properties": {
+    "error_code": {
+      "type": "string",
+      "enum": [
+        "NACP-400",
+        "NACP-401",
+        "NACP-402",
+        "NACP-403",
+        "NACP-404",
+        "NACP-408",
+        "NACP-409",
+        "NACP-413",
+        "NACP-422",
+        "NACP-429",
+        "NACP-500",
+        "NACP-503"
+      ]
+    },
+    "message": {
+      "type": "string"
+    },
+    "details": {
+      "type": "object"
+    },
+    "original_msg_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "error_code",
+    "message"
+  ],
+  "additionalProperties": true
+}

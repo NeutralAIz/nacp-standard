@@ -1,0 +1,35 @@
+{
+  "$id": "https://nacp.dev/schemas/settlement.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP Settlement Reference",
+  "description": "Reference to an external payment, escrow, credit, receipt, or settlement system. NACP does not move money or define a payment rail; this object only carries pointers to whatever external system actually settled the contract.",
+  "type": "object",
+  "properties": {
+    "system": {
+      "type": "string",
+      "description": "Opaque identifier for the external system (e.g. 'stripe', 'lightning', 'internal_credit_ledger', or implementation-namespaced)."
+    },
+    "reference_id": {
+      "type": "string",
+      "description": "Identifier in the external system."
+    },
+    "amount_quoted": {
+      "type": "string",
+      "description": "String-encoded decimal amount (avoids floating-point ambiguity). Optional."
+    },
+    "currency": {
+      "type": "string",
+      "description": "Currency or unit (e.g. 'USD', 'USDC', 'CREDIT'). Opaque to NACP."
+    },
+    "receipt_uri": {
+      "type": "string"
+    },
+    "extension_fields": {
+      "type": "object",
+      "description": "Namespaced extension data.",
+      "additionalProperties": true
+    }
+  },
+  "required": ["system"],
+  "additionalProperties": true
+}

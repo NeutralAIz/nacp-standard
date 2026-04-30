@@ -1,0 +1,92 @@
+{
+  "$id": "https://nacp.dev/schemas/skill.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP Skill Declaration",
+  "description": "Describes a capability that an agent offers.",
+  "type": "object",
+  "properties": {
+    "skill_id": {
+      "type": "string",
+      "description": "Unique skill identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable skill name"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this skill does"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "input_schema": {
+      "type": "object",
+      "description": "JSON Schema for skill inputs"
+    },
+    "output_schema": {
+      "type": "object",
+      "description": "JSON Schema for skill outputs"
+    },
+    "interfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "nacp_task",
+              "mcp_tool",
+              "rest",
+              "cli",
+              "python",
+              "websocket"
+            ]
+          },
+          "message_type": {
+            "type": "string"
+          },
+          "server": {
+            "type": "string"
+          },
+          "tool_name": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "description": "How this skill can be invoked"
+    },
+    "avg_latency_ms": {
+      "type": "number",
+      "description": "Average execution time in milliseconds"
+    },
+    "cost_per_call": {
+      "type": "number",
+      "description": "Estimated cost per invocation"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags"
+    }
+  },
+  "required": [
+    "skill_id",
+    "name",
+    "description"
+  ],
+  "additionalProperties": true
+}

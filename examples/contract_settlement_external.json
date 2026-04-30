@@ -1,0 +1,47 @@
+{
+  "contract_id": "contract_settle_001",
+  "contract_type": "delegated_task",
+  "protocol_version": "1.1",
+  "requester": { "id": "did:example:requester", "id_type": "did" },
+  "provider": { "id": "did:example:provider", "id_type": "did" },
+  "created_at": "2026-04-30T10:00:00.000000Z",
+  "task_category": "code_review",
+  "task_summary": "Review pull request.",
+  "execution_transport": "api",
+  "execution_refs": {
+    "endpoint": "https://provider.example.com/api/v1/jobs",
+    "job_id": "job_settle_001"
+  },
+  "lifecycle_status": "settled",
+  "settlement_mode": "external_reference",
+  "settlement_reference": {
+    "system": "stripe",
+    "reference_id": "pi_3OabcdEFG",
+    "amount_quoted": "0.10",
+    "currency": "USD",
+    "receipt_uri": "https://example.com/receipts/r_001"
+  },
+  "audit_events": [
+    {
+      "event_id": "evt_s001",
+      "timestamp": "2026-04-30T10:05:00.000000Z",
+      "actor": { "id": "did:example:requester", "id_type": "did" },
+      "event_type": "settlement_recorded",
+      "details": {
+        "settlement_reference": {
+          "system": "stripe",
+          "reference_id": "pi_3OabcdEFG",
+          "amount_quoted": "0.10",
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "event_id": "evt_s002",
+      "timestamp": "2026-04-30T10:05:01.000000Z",
+      "actor": { "id": "did:example:requester", "id_type": "did" },
+      "event_type": "lifecycle_transition",
+      "details": { "from": "completed", "to": "settled" }
+    }
+  ]
+}
