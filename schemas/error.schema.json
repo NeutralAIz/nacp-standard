@@ -10,11 +10,13 @@
       "enum": [
         "NACP-400",
         "NACP-401",
+        "NACP-402",
         "NACP-403",
         "NACP-404",
         "NACP-408",
         "NACP-409",
         "NACP-413",
+        "NACP-422",
         "NACP-429",
         "NACP-500",
         "NACP-503"

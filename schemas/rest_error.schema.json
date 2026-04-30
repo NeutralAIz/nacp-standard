@@ -1,0 +1,39 @@
+{
+  "$id": "https://nacp.dev/schemas/rest_error.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NACP REST API Error Envelope",
+  "description": "Body shape returned by NACP-conformant REST APIs for any non-2xx response. Distinct from ``error.schema.json``, which describes the payload of an inter-agent ERROR envelope. New in NACP 1.1.1.",
+  "type": "object",
+  "required": ["error_code", "error_message"],
+  "properties": {
+    "error_code": {
+      "type": "string",
+      "enum": [
+        "NACP-400", "NACP-401", "NACP-402", "NACP-403", "NACP-404",
+        "NACP-408", "NACP-409", "NACP-413", "NACP-422", "NACP-429",
+        "NACP-500", "NACP-503"
+      ]
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Single-line human-readable summary."
+    },
+    "error_detail": {
+      "description": "Structured machine-readable context. May be ``null``, an object, or an array. Implementations should put state-machine state, validation failures, and recovery hints here.",
+      "anyOf": [
+        {"type": "object"},
+        {"type": "array"},
+        {"type": "null"}
+      ]
+    },
+    "request_id": {
+      "type": "string",
+      "description": "Echo of the response's ``X-Request-Id`` header. Implementations SHOULD populate this for traceability."
+    },
+    "detail": {
+      "type": "string",
+      "description": "Optional backwards-compatibility mirror of ``error_message``. Implementations MAY emit it during a transition window. Removed in NACP 1.2."
+    }
+  },
+  "additionalProperties": false
+}
