@@ -32,7 +32,7 @@
     },
     "detail": {
       "type": "string",
-      "description": "Optional backwards-compatibility mirror of ``error_message``. Implementations MAY emit it during a transition window. Removed in NACP 1.2."
+      "description": "Optional backwards-compatibility mirror of ``error_message``. Implementations MAY emit it during a transition window. Deprecated since 1.1.1; removable in 2.0."
     }
   },
   "additionalProperties": false
