@@ -18,6 +18,7 @@
         "rejected",
         "running",
         "progress",
+        "paused",
         "completed",
         "failed",
         "partial",
