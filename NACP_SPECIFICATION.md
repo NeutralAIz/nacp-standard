@@ -1,7 +1,7 @@
 # NACP — Networked Agent Contract Protocol
 
-**Version:** 1.1.1
-**Status:** Stable (open protocol; see [docs/GOVERNANCE.md](docs/GOVERNANCE.md))
+**Version:** 1.1.1-draft
+**Status:** Draft (open protocol; see [docs/GOVERNANCE.md](docs/GOVERNANCE.md))
 **Last Reviewed:** 2026-04-30
 
 ---
@@ -188,7 +188,7 @@ Implementations MAY add additional namespaced lifecycle states as `extension_fie
 
 ### 4.2 Permitted transitions
 
-Implementations **MUST** reject any transition outside the table below. A rejected transition MUST surface a conflict error appropriate to the transport in use (see the binding sections in §8). The error SHOULD carry the current `lifecycle_status` and the set of permitted next states so the caller can recover.
+Implementations SHOULD enforce the following transitions:
 
 ```
 proposed   → accepted | rejected | cancelled
@@ -199,6 +199,8 @@ completed  → settled | disputed
 failed     → disputed | settled
 disputed   → in_progress | completed | failed | cancelled | settled
 ```
+
+Any attempt to transition outside these is non-conformant.
 
 ### 4.3 Audit events
 
@@ -218,25 +220,6 @@ disputed   → in_progress | completed | failed | cancelled | settled
 Implementations SHOULD make the audit log tamper-evident (e.g. by chaining records or signing them). NACP does not mandate a specific scheme.
 
 Schema: [`schemas/audit_event.schema.json`](schemas/audit_event.schema.json).
-
-### 4.4 Contract lifecycle vs task-message status
-
-The contract `lifecycle_status` (§4.1) governs the coarse, settlement-relevant state. The `TASK_STATUS_RESPONSE` message (§8.1.1) carries a `status` enum for finer-grained operational state. They are deliberately distinct layers.
-
-| Contract lifecycle (§4.1) | Task-message status | Note |
-|---|---|---|
-| `proposed` | `created`, `assigned` | message layer splits creation from routing |
-| `accepted` | `accepted` | |
-| `rejected` | `rejected` | |
-| `in_progress` | `running`, `progress` | message layer decomposes in-progress |
-| `paused` | `paused` | |
-| `completed` | `completed`, `partial` | `partial` = partial delivery; terminal-acceptable depends on contract terms |
-| `failed` | `failed`, `timeout`, `partial` | `timeout` = failure mode; `partial` maps here if requirements not met |
-| `cancelled` | `cancelled` | |
-| `disputed` | (raised via audit event) | |
-| `settled` | (no message-layer state) | contract-only |
-
-Implementations MUST NOT use message-layer statuses as core contract lifecycle states unless they are explicitly added as namespaced extensions.
 
 ---
 
@@ -352,8 +335,6 @@ A reference catalog of message types is provided for implementations that want a
 
 When this binding is used, task lifecycle messages SHOULD reference a NACP `contract_id` so contract state and message state stay aligned.
 
-A rejected transition is surfaced as an `ERROR` envelope (`schemas/error.schema.json`) carrying the equivalent recovery information.
-
 #### 8.1.2 Canonical JSON for signing
 
 Signature verification depends on deterministic serialization. All implementations using this binding MUST use this canonical form:
@@ -454,8 +435,6 @@ NACP-conformant REST APIs SHOULD return non-2xx responses in this shape:
   "request_id": "<X-Request-Id>"
 }
 ```
-
-A rejected lifecycle transition MUST return HTTP 409 with a body conforming to `rest_error.schema.json`, `error_code: "NACP-409"`. `error_detail` SHOULD carry the current `lifecycle_status` and the permitted next states.
 
 Schema: [`schemas/rest_error.schema.json`](schemas/rest_error.schema.json). `error_code` extends §8.1.3.
 
@@ -567,9 +546,7 @@ Implementations MUST NOT reject contracts because of unknown extension namespace
 - **Minor** version bump: backward-compatible additions (new fields, new lifecycle states with namespaced extensions).
 - **Patch** version bump: clarifications and documentation fixes.
 
-A field MAY be **deprecated** in a minor release — marked deprecated in the schema and `CHANGELOG.md`, but still emitted and accepted. A deprecated field MUST NOT be **removed** until the next **major** release. Removing a field is always a major change (per the rule above); deprecation is the minor-release signal that the removal is coming.
-
-`protocol_version` on a contract identifies the version it was authored against. The version string transmitted carries the major and minor digits (e.g. `"1.1"`); the patch digit is editorial and not transmitted. Implementations SHOULD accept any minor version within the same major version.
+`protocol_version` on a contract identifies the version it was authored against. Implementations SHOULD accept any minor version within the same major version.
 
 ### 9.3 Implementation independence
 
