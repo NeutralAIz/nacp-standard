@@ -1,8 +1,10 @@
 name: NACP Conformance
 
-# The release train runs these tests through train-gate.yml; this workflow stays for manual runs.
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
