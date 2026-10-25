@@ -1,0 +1,13 @@
+# train.config.yml — nacp-standard (wave 1 canary) (release-train PROPOSAL Appendix A, schema_version 1).
+# Lives at the repo root on the base branch. No secrets.
+schema_version: 1
+base_branch: main
+tag_prefix: v
+initial_version: null            # nacp-standard already has a v* line (v1.1.1); set only for a repo with no tag
+version_files: []                # files whose version string the cut rewrites, e.g. [package.json]
+fast_check: {workflow: .github/workflows/train-gate.yml, level: fast, timeout_min: 5}
+gate:       {workflow: .github/workflows/train-gate.yml, level: full, timeout_min: 30, required_jobs: ['conformance (3.10)']}
+# No release adapter for nacp-standard: the cut creates the tag + GitHub Release only (no deploy).
+# release: {workflow: <path>, inputs: [tag, sha, transaction_id], timeout_min: 30}
+batch_window_min: 30
+ticket_pattern: '^(Q-\d+|#\d+)$'
